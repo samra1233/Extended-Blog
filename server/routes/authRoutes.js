@@ -6,6 +6,8 @@ import {
   updateProfile,
   toggleBookmark,
   getBookmarks,
+  toggleFollow,
+  getFollowingFeed,
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -18,5 +20,8 @@ router.put('/me', protect, updateProfile);
 
 router.get('/bookmarks', protect, getBookmarks);
 router.put('/bookmarks/:postId', protect, toggleBookmark);
+
+router.put('/follow/:userId', protect, toggleFollow);
+router.get('/following-feed', protect, getFollowingFeed);
 
 export default router;

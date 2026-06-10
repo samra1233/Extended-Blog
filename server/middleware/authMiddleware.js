@@ -38,4 +38,19 @@ const adminOnly = asyncHandler(async (req, res, next) => {
   throw new Error('Admin access required');
 });
 
-export { protect, adminOnly };
+// Populates req.user if a valid token is present, but does NOT block the request if absent
+const optionalProtect = asyncHandler(async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return next();
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id).select('-password');
+  } catch {
+    // Invalid/expired token — treat as unauthenticated
+  }
+  next();
+});
+
+export { protect, adminOnly, optionalProtect };

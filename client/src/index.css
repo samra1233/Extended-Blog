@@ -1,3 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #fafaf9;
+    color: #1c1917;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.025em;
+  }
+}
+
+@layer components {
+  /* Article body typography */
+  .article-prose {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #292524;
+  }
+
+  /* Smooth focus rings */
+  .input-base {
+    @apply w-full border rounded-xl px-4 py-3 text-sm transition-all duration-150;
+    @apply bg-white border-stone-200 text-stone-900 placeholder-stone-400;
+    @apply focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-stone-900 hover:bg-stone-800 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors duration-150;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Amber accent button */
+  .btn-amber {
+    @apply bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors duration-150;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Ghost button */
+  .btn-ghost {
+    @apply text-stone-600 hover:text-stone-900 hover:bg-stone-100 font-medium px-3 py-2 rounded-lg text-sm transition-colors duration-150;
+  }
+
+  /* Tag pill */
+  .tag-pill {
+    @apply bg-amber-50 text-amber-700 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-medium;
+  }
+
+  /* Surface card */
+  .card {
+    @apply bg-white rounded-2xl border border-stone-100 shadow-sm;
+  }
+}

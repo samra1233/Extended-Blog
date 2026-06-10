@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import PostForm from '../components/PostForm';
 
 export default function EditPost() {
   const { id } = useParams();
@@ -57,6 +59,7 @@ export default function EditPost() {
         status: form.status,
       };
       await api.put(`/posts/${id}`, payload);
+      toast.success('Post updated');
       navigate(`/posts/${id}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update post.');
@@ -67,112 +70,37 @@ export default function EditPost() {
 
   if (fetching) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-slate-500">Loading...</div>
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+        <div className="flex items-center gap-3 text-stone-400">
+          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          <span className="text-sm">Loading post…</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      <div className="max-w-3xl mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold text-slate-100 mb-8">Edit Post</h1>
+    <div className="min-h-screen bg-stone-50">
+      <div className="bg-white border-b border-stone-100">
+        <div className="max-w-3xl mx-auto px-6 py-8">
+          <h1 className="text-3xl font-bold text-stone-900 tracking-tight">Edit post</h1>
+          <p className="text-stone-500 text-sm mt-1">Update your story</p>
+        </div>
+      </div>
 
-        {error && (
-          <div className="bg-red-900/40 border border-red-700 text-red-300 text-sm rounded-lg px-4 py-3 mb-6">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-slate-300 text-sm font-medium mb-1">Title *</label>
-            <input
-              type="text"
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              required
-              className="w-full bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-slate-300 text-sm font-medium mb-1">
-              Cover Image URL <span className="text-slate-500 font-normal">(optional)</span>
-            </label>
-            <input
-              type="url"
-              name="coverImage"
-              value={form.coverImage}
-              onChange={handleChange}
-              placeholder="https://example.com/image.jpg"
-              className="w-full bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-slate-300 text-sm font-medium mb-1">
-              Tags <span className="text-slate-500 font-normal">(optional, comma-separated)</span>
-            </label>
-            <input
-              type="text"
-              name="tags"
-              value={form.tags}
-              onChange={handleChange}
-              placeholder="technology, design, coding"
-              className="w-full bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-slate-300 text-sm font-medium mb-1">Content *</label>
-            <textarea
-              name="content"
-              value={form.content}
-              onChange={handleChange}
-              required
-              rows={14}
-              className="w-full bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-slate-300 text-sm font-medium mb-2">Visibility</label>
-            <div className="flex gap-3">
-              {['published', 'draft'].map((s) => (
-                <label key={s} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="status"
-                    value={s}
-                    checked={form.status === s}
-                    onChange={handleChange}
-                    className="accent-amber-400"
-                  />
-                  <span className="text-slate-300 text-sm capitalize">{s}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-2">
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-amber-400 hover:bg-amber-500 disabled:opacity-50 text-slate-900 font-semibold px-6 py-3 rounded-xl transition-colors"
-            >
-              {loading ? 'Saving...' : 'Save Changes'}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(`/posts/${id}`)}
-              className="bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium px-6 py-3 rounded-xl transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+      <div className="max-w-3xl mx-auto px-6 py-10">
+        <PostForm
+          form={form}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          error={error}
+          loading={loading}
+          submitLabel="Save changes"
+          cancelPath={`/posts/${id}`}
+        />
       </div>
     </div>
   );

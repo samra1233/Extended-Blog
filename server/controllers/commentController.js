@@ -1,5 +1,8 @@
 import asyncHandler from 'express-async-handler';
 import Comment from '../models/Comment.js';
+import Post from '../models/Post.js';
+import validateObjectId from '../utils/validateId.js';
+import { createNotification } from '../utils/createNotification.js';
 
 // Build a nested tree from a flat array of comment objects
 const buildCommentTree = (comments) => {
@@ -33,7 +36,8 @@ const buildCommentTree = (comments) => {
 const getCommentsByPost = asyncHandler(async (req, res) => {
   const comments = await Comment.find({ post: req.params.postId })
     .populate('author', 'name avatar')
-    .sort({ createdAt: 1 });
+    .sort({ createdAt: 1 })
+    .limit(200);
 
   res.json(buildCommentTree(comments));
 });
@@ -65,12 +69,21 @@ const addComment = asyncHandler(async (req, res) => {
   });
 
   const populated = await comment.populate('author', 'name avatar');
+
+  // Notify post author about new comment (fire-and-forget)
+  Post.findById(req.params.postId).then((post) => {
+    if (post) {
+      createNotification({ recipient: post.author, sender: req.user._id, type: 'comment', post: post._id }).catch(() => {});
+    }
+  }).catch(() => {});
+
   res.status(201).json({ ...populated.toObject(), replies: [] });
 });
 
 // @desc  Delete a comment (author or admin)
 // @route DELETE /api/comments/:id
 const deleteComment = asyncHandler(async (req, res) => {
+  validateObjectId(req.params.id, res, 'comment ID');
   const comment = await Comment.findById(req.params.id);
 
   if (!comment) {

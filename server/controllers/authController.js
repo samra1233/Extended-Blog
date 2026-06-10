@@ -1,6 +1,20 @@
 import asyncHandler from 'express-async-handler';
+import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
+import Post from '../models/Post.js';
 import generateToken from '../utils/generateToken.js';
+import { createNotification } from '../utils/createNotification.js';
+
+const formatUser = (user, token) => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  avatar: user.avatar,
+  bio: user.bio,
+  role: user.role,
+  following: user.following || [],
+  ...(token ? { token } : {}),
+});
 
 // @desc  Register a new user
 // @route POST /api/auth/register
@@ -12,6 +26,11 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('Please provide name, email, and password');
   }
 
+  if (password.length < 8) {
+    res.status(400);
+    throw new Error('Password must be at least 8 characters');
+  }
+
   const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400);
@@ -20,15 +39,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const user = await User.create({ name, email, password });
 
-  res.status(201).json({
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    avatar: user.avatar,
-    bio: user.bio,
-    role: user.role,
-    token: generateToken(user._id),
-  });
+  res.status(201).json(formatUser(user, generateToken(user._id)));
 });
 
 // @desc  Authenticate user & get token
@@ -43,26 +54,25 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  if (!user || !(await user.matchPassword(password))) {
+  // Always run bcrypt comparison to prevent timing-based user enumeration
+  const dummyHash = '$2a$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012';
+  const passwordMatch = user
+    ? await user.matchPassword(password)
+    : await bcrypt.compare(password, dummyHash);
+
+  if (!user || !passwordMatch) {
     res.status(401);
     throw new Error('Invalid email or password');
   }
 
-  res.json({
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    avatar: user.avatar,
-    bio: user.bio,
-    role: user.role,
-    token: generateToken(user._id),
-  });
+  res.json(formatUser(user, generateToken(user._id)));
 });
 
 // @desc  Get current logged-in user
 // @route GET /api/auth/me
 const getMe = asyncHandler(async (req, res) => {
-  res.json(req.user);
+  const user = await User.findById(req.user._id).select('-password');
+  res.json(formatUser(user));
 });
 
 // @desc  Update profile (name, bio, avatar)
@@ -82,14 +92,7 @@ const updateProfile = asyncHandler(async (req, res) => {
 
   const updated = await user.save();
 
-  res.json({
-    _id: updated._id,
-    name: updated.name,
-    email: updated.email,
-    avatar: updated.avatar,
-    bio: updated.bio,
-    role: updated.role,
-  });
+  res.json(formatUser(updated));
 });
 
 // @desc  Toggle bookmark on a post
@@ -122,4 +125,61 @@ const getBookmarks = asyncHandler(async (req, res) => {
   res.json(user.bookmarks);
 });
 
-export { registerUser, loginUser, getMe, updateProfile, toggleBookmark, getBookmarks };
+// @desc  Follow / unfollow a user
+// @route PUT /api/auth/follow/:userId
+const toggleFollow = asyncHandler(async (req, res) => {
+  const targetId = req.params.userId;
+
+  if (targetId === req.user._id.toString()) {
+    res.status(400);
+    throw new Error('You cannot follow yourself');
+  }
+
+  const target = await User.findById(targetId);
+  if (!target) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  const me = await User.findById(req.user._id);
+  const alreadyFollowing = me.following.some((id) => id.toString() === targetId);
+
+  if (alreadyFollowing) {
+    me.following = me.following.filter((id) => id.toString() !== targetId);
+  } else {
+    me.following.push(targetId);
+  }
+
+  await me.save();
+
+  const nowFollowing = !alreadyFollowing;
+  if (nowFollowing) {
+    createNotification({ recipient: targetId, sender: req.user._id, type: 'follow' }).catch(() => {});
+  }
+
+  const followerCount = await User.countDocuments({ following: targetId });
+  res.json({ following: nowFollowing, followerCount });
+});
+
+// @desc  Get paginated feed from followed authors
+// @route GET /api/auth/following-feed
+const getFollowingFeed = asyncHandler(async (req, res) => {
+  const me = await User.findById(req.user._id).select('following');
+
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 9));
+  const skip = (page - 1) * limit;
+
+  const [posts, total] = await Promise.all([
+    Post.find({ author: { $in: me.following }, status: 'published' })
+      .populate('author', 'name avatar')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    Post.countDocuments({ author: { $in: me.following }, status: 'published' }),
+  ]);
+
+  res.json({ posts, page, pages: Math.ceil(total / limit), total });
+});
+
+export { registerUser, loginUser, getMe, updateProfile, toggleBookmark, getBookmarks, toggleFollow, getFollowingFeed };

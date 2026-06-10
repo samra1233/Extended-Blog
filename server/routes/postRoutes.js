@@ -2,6 +2,7 @@ import express from 'express';
 import {
   getAllPosts,
   searchPosts,
+  getMyPosts,
   getPostById,
   getTrendingPosts,
   createPost,
@@ -9,7 +10,7 @@ import {
   deletePost,
   likePost,
 } from '../controllers/postController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import { protect, optionalProtect } from '../middleware/authMiddleware.js';
 import { toggleBookmark } from '../controllers/authController.js';
 
 const router = express.Router();
@@ -17,9 +18,10 @@ const router = express.Router();
 // Static routes must be defined before /:id to avoid being swallowed
 router.get('/search', searchPosts);
 router.get('/trending', getTrendingPosts);
+router.get('/mine', protect, getMyPosts);
 
 router.get('/', getAllPosts);
-router.get('/:id', getPostById);
+router.get('/:id', optionalProtect, getPostById);
 router.post('/', protect, createPost);
 router.put('/:id', protect, updatePost);
 router.delete('/:id', protect, deletePost);
