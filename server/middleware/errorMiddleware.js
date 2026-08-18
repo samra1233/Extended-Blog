@@ -7,9 +7,7 @@ export const notFound = (req, res, next) => {
 export const errorHandler = (err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   
-  if (process.env.NODE_ENV !== 'production') {
-    console.error(`[Error] ${req.method} ${req.originalUrl}:`, err.message);
-  }
+  console.error(`[Error] ${req.method} ${req.originalUrl}:`, err.stack || err.message);
 
   res.status(statusCode).json({
     message: err.message || 'Internal Server Error',
