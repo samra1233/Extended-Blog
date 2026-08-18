@@ -56,7 +56,7 @@ setIO(io);
 app.use(helmet());
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || origin === CLIENT_ORIGIN) return callback(null, true);
+    if (!origin || origin === CLIENT_ORIGIN || origin.endsWith('.vercel.app') || origin.includes('localhost')) return callback(null, true);
     callback(new Error('CORS policy: origin not allowed'));
   },
   credentials: true,
