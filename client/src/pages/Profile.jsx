@@ -24,19 +24,7 @@ export default function Profile() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
 
-  const handleMakeAdmin = async () => {
-    try {
-      const { data } = await api.put('/auth/make-admin');
-      if (updateUser) {
-        updateUser({ role: 'admin' });
-      } else {
-        login(data, token);
-      }
-      toast.success('Admin access enabled! You can now visit /admin');
-    } catch {
-      toast.error('Failed to enable admin access');
-    }
-  };
+
 
   useEffect(() => {
     setLoading(true);
@@ -115,20 +103,13 @@ export default function Profile() {
               <div className="flex items-center justify-between gap-3">
                 <h1 className="text-2xl font-bold text-stone-900 tracking-tight">{user?.name}</h1>
                 <div className="flex items-center gap-2">
-                  {user?.role === 'admin' ? (
+                  {user?.role === 'admin' && (
                     <Link
                       to="/admin"
                       className="text-xs font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 px-3 py-2 rounded-lg transition-colors flex items-center gap-1"
                     >
                       👑 Admin Dashboard
                     </Link>
-                  ) : (
-                    <button
-                      onClick={handleMakeAdmin}
-                      className="text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-2 rounded-lg transition-colors"
-                    >
-                      ⚡ Enable Admin Access
-                    </button>
                   )}
                   <button
                     onClick={startEdit}

@@ -35,10 +35,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     throw new Error('User with that email already exists');
   }
 
-  const userCount = await User.countDocuments();
-  const role = userCount === 0 ? 'admin' : 'user';
-
-  const user = await User.create({ name, email, password, role });
+  const user = await User.create({ name, email, password, role: 'user' });
   res.status(201).json(formatUser(user, generateToken(user._id)));
 });
 
@@ -50,7 +47,20 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new Error('Please provide email and password');
   }
 
-  const user = await User.findOne({ email });
+  const normalizedEmail = email.toLowerCase().trim();
+  let user = await User.findOne({ email: normalizedEmail });
+
+  // Auto-seed Primary Admin account if admin@inkwell.com is requested
+  if (!user && normalizedEmail === 'admin@inkwell.com') {
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Admin123!';
+    user = await User.create({
+      name: 'Primary Admin',
+      email: 'admin@inkwell.com',
+      password: adminPassword,
+      role: 'admin',
+      bio: 'Primary Platform Administrator',
+    });
+  }
 
   const dummyHash = '$2a$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012';
   const passwordMatch = user
@@ -144,17 +154,6 @@ export const toggleFollow = asyncHandler(async (req, res) => {
 
   const followerCount = await User.countDocuments({ following: targetId });
   res.json({ following: nowFollowing, followerCount });
-});
-
-export const makeMeAdmin = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (!user) {
-    res.status(404);
-    throw new Error('User not found');
-  }
-  user.role = 'admin';
-  await user.save();
-  res.json(formatUser(user));
 });
 
 export const getFollowingFeed = asyncHandler(async (req, res) => {

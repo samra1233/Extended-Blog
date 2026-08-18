@@ -17,6 +17,7 @@ const EditPost = lazy(() => import('./pages/EditPost'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Bookmarks = lazy(() => import('./pages/Bookmarks'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function PageLoader() {
@@ -59,6 +60,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/admin-login" element={<AdminLogin />} />
               <Route path="/register" element={<Register />} />
               <Route path="/posts/:id" element={<PostDetail />} />
 
