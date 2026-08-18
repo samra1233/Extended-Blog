@@ -142,14 +142,12 @@ export default function PostDetail() {
   return (
     <div className="min-h-screen bg-stone-50">
 
-      {/* Reading progress bar */}
       <div
         className="fixed top-0 left-0 h-1 bg-amber-500 z-[60] transition-[width] duration-75 ease-linear"
         style={{ width: `${scrollProgress}%` }}
         aria-hidden="true"
       />
 
-      {/* Cover image — full-bleed */}
       {post.coverImage && (
         <div className="w-full bg-stone-100">
           <img
@@ -164,7 +162,6 @@ export default function PostDetail() {
 
       <div className="max-w-3xl mx-auto px-6 py-12">
 
-        {/* Draft banner */}
         {post.status === 'draft' && (
           <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-sm px-4 py-3 rounded-xl mb-6 font-medium">
             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -174,7 +171,6 @@ export default function PostDetail() {
           </div>
         )}
 
-        {/* Tags */}
         {post.tags?.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-5">
             {post.tags.map((tag) => (
@@ -189,12 +185,10 @@ export default function PostDetail() {
           </div>
         )}
 
-        {/* Title */}
         <h1 className="text-4xl md:text-5xl font-bold text-stone-900 mb-6 leading-tight tracking-tight">
           {post.title}
         </h1>
 
-        {/* Author row + actions */}
         <div className="flex items-center justify-between mb-8 pb-6 border-b border-stone-200 flex-wrap gap-4">
           <div className="flex items-center gap-3">
             {post.author?.avatar ? (
@@ -223,7 +217,6 @@ export default function PostDetail() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            {/* Like */}
             <button
               onClick={handleLike}
               disabled={likeLoading}
@@ -240,7 +233,6 @@ export default function PostDetail() {
               {post.likes?.length || 0}
             </button>
 
-            {/* Bookmark */}
             {token && (
               <button
                 onClick={handleBookmark}
@@ -259,7 +251,6 @@ export default function PostDetail() {
               </button>
             )}
 
-            {/* Share */}
             <button
               onClick={() => {
                 const url = window.location.href;
@@ -298,10 +289,8 @@ export default function PostDetail() {
           </div>
         </div>
 
-        {/* AI Summarizer */}
         {post.status === 'published' && <AISummarizer content={post.content} />}
 
-        {/* Article body */}
         <div className="article-prose mb-16">
           <ReactMarkdown
             rehypePlugins={[rehypeSanitize]}

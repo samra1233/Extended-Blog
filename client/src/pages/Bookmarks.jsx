@@ -18,7 +18,6 @@ export default function Bookmarks() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Page header */}
       <div className="bg-white border-b border-stone-100">
         <div className="max-w-6xl mx-auto px-6 py-10">
           <h1 className="text-4xl font-bold text-stone-900 tracking-tight mb-1">Bookmarks</h1>

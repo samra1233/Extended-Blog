@@ -9,7 +9,6 @@ export default function FollowButton({ authorId, authorName, className = '' }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // Don't render for guests, anonymous authors, or the post's own author
   if (!authorId || !user || user._id === authorId) return null;
 
   const isFollowing = user.following?.some((id) => {

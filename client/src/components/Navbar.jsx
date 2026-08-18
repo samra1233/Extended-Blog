@@ -77,7 +77,6 @@ export default function Navbar() {
       isActive(path) ? 'text-amber-700' : 'text-stone-700 hover:text-stone-900'
     }`;
 
-  // Close notification dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (notifRef.current && !notifRef.current.contains(e.target)) {
@@ -99,7 +98,6 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="h-16 flex items-center justify-between">
 
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group" onClick={() => setMobileOpen(false)}>
             <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-amber-600 transition-colors">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
@@ -109,7 +107,6 @@ export default function Navbar() {
             <span className="text-xl font-bold text-stone-900 tracking-tight">InkWell</span>
           </Link>
 
-          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
             {user ? (
               <>
@@ -128,7 +125,6 @@ export default function Navbar() {
                   </Link>
                 )}
 
-                {/* Notification bell */}
                 <div className="relative ml-1" ref={notifRef}>
                   <button
                     onClick={handleNotifToggle}
@@ -145,7 +141,6 @@ export default function Navbar() {
                     )}
                   </button>
 
-                  {/* Notification dropdown */}
                   {notifOpen && (
                     <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl border border-stone-200 shadow-xl overflow-hidden z-50">
                       <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
@@ -207,7 +202,6 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile hamburger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden p-2 rounded-lg text-stone-600 hover:bg-stone-100 transition-colors"
@@ -227,7 +221,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-stone-100 bg-white px-6 py-4 space-y-1">
           {user ? (

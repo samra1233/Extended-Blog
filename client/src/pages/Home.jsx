@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 export default function Home() {
   const { user, token } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState('all'); // 'all' | 'following'
+  const [activeTab, setActiveTab] = useState('all'); 
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -90,7 +90,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-stone-50">
 
-      {/* Page header */}
       <div className="bg-white border-b border-stone-100">
         <div className="max-w-6xl mx-auto px-6 py-10 md:py-14">
           <div className="max-w-2xl">
@@ -101,7 +100,6 @@ export default function Home() {
               Discover ideas, insights, and perspectives from our community of writers.
             </p>
 
-            {/* Search bar */}
             <form onSubmit={handleSearch} className="flex gap-2.5">
               <div className="relative flex-1">
                 <svg
@@ -144,10 +142,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Main content */}
       <div className="max-w-6xl mx-auto px-6 py-10">
 
-        {/* Feed tabs — only shown when logged in */}
         {user && (
           <div className="flex items-center gap-1 mb-8 border-b border-stone-200 pb-0">
             {[
@@ -174,7 +170,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Tag filter pills */}
         {!loading && !searchParams.get('q') && allTags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8" role="group" aria-label="Filter by tag">
             {allTags.map((tag) => (
@@ -193,7 +188,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Active filter notice */}
         {isFiltered && !loading && (
           <div className="flex items-center justify-between mb-6">
             <p className="text-stone-500 text-sm">
@@ -219,7 +213,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Error state */}
         {error && (
           <div className="text-center py-24">
             <div className="w-16 h-16 bg-red-50 border border-red-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -234,7 +227,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Post grid */}
         {!error && (loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
@@ -279,7 +271,6 @@ export default function Home() {
           </div>
         ))}
 
-        {/* Pagination */}
         {!loading && !error && totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-10">
             <button

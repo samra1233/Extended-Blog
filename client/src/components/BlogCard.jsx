@@ -14,7 +14,6 @@ function estimateReadTime(content) {
   return Math.max(1, Math.ceil(words / 200));
 }
 
-// Deterministic gradient based on post title (gives each unimaged post a unique color)
 const GRADIENTS = [
   'from-amber-50 to-orange-100',
   'from-sky-50 to-blue-100',
@@ -71,7 +70,6 @@ export default memo(function BlogCard({ post, index = 0 }) {
                  shadow-[0_1px_3px_0_rgb(0,0,0,0.06)] hover:shadow-[0_8px_25px_-5px_rgb(0,0,0,0.1)]
                  hover:-translate-y-0.5 transition-all duration-200"
     >
-      {/* Cover image */}
       <div className="aspect-[16/10] overflow-hidden relative">
         {post.coverImage ? (
           <>
@@ -102,7 +100,6 @@ export default memo(function BlogCard({ post, index = 0 }) {
           />
         )}
 
-        {/* Draft badge overlay */}
         {post.status === 'draft' && (
           <div className="absolute top-3 left-3 bg-stone-900/80 text-white text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-sm">
             Draft
@@ -110,9 +107,7 @@ export default memo(function BlogCard({ post, index = 0 }) {
         )}
       </div>
 
-      {/* Content */}
       <div className="p-5">
-        {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
             {post.tags.slice(0, 2).map((tag) => (
@@ -124,19 +119,15 @@ export default memo(function BlogCard({ post, index = 0 }) {
           </div>
         )}
 
-        {/* Title */}
         <h2 className="text-stone-900 text-lg font-semibold leading-snug mb-2 line-clamp-2 group-hover:text-amber-700 transition-colors duration-150">
           {post.title}
         </h2>
 
-        {/* Excerpt */}
         <p className="text-stone-500 text-sm leading-relaxed line-clamp-2 mb-4">
           {excerpt}
         </p>
 
-        {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-stone-100">
-          {/* Author */}
           <div className="flex items-center gap-2">
             {post.author?.avatar ? (
               <img
@@ -154,7 +145,6 @@ export default memo(function BlogCard({ post, index = 0 }) {
             </span>
           </div>
 
-          {/* Meta */}
           <div className="flex items-center gap-3 text-stone-400 text-xs">
             <span>{formatDate(post.createdAt)}</span>
             <span className="flex items-center gap-1">

@@ -23,44 +23,37 @@
 }
 
 @layer components {
-  /* Article body typography */
-  .article-prose {
+    .article-prose {
     font-size: 1.125rem;
     line-height: 1.8;
     color: #292524;
   }
 
-  /* Smooth focus rings */
-  .input-base {
+    .input-base {
     @apply w-full border rounded-xl px-4 py-3 text-sm transition-all duration-150;
     @apply bg-white border-stone-200 text-stone-900 placeholder-stone-400;
     @apply focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent;
   }
 
-  /* Primary button */
-  .btn-primary {
+    .btn-primary {
     @apply bg-stone-900 hover:bg-stone-800 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors duration-150;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
-  /* Amber accent button */
-  .btn-amber {
+    .btn-amber {
     @apply bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors duration-150;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
-  /* Ghost button */
-  .btn-ghost {
+    .btn-ghost {
     @apply text-stone-600 hover:text-stone-900 hover:bg-stone-100 font-medium px-3 py-2 rounded-lg text-sm transition-colors duration-150;
   }
 
-  /* Tag pill */
-  .tag-pill {
+    .tag-pill {
     @apply bg-amber-50 text-amber-700 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-medium;
   }
 
-  /* Surface card */
-  .card {
+    .card {
     @apply bg-white rounded-2xl border border-stone-100 shadow-sm;
   }
 }

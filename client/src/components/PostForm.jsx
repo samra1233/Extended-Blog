@@ -45,7 +45,6 @@ export default function PostForm({ form, onChange, onSubmit, error, loading, sub
       )}
 
       <form onSubmit={onSubmit} className="space-y-6">
-        {/* Title */}
         <div>
           <label htmlFor="post-title" className={labelClass}>
             Title <span className="text-red-400">*</span>
@@ -63,7 +62,6 @@ export default function PostForm({ form, onChange, onSubmit, error, loading, sub
           />
         </div>
 
-        {/* Cover image */}
         <div>
           <label className={labelClass}>
             Cover image{' '}
@@ -107,7 +105,6 @@ export default function PostForm({ form, onChange, onSubmit, error, loading, sub
           )}
         </div>
 
-        {/* Tags */}
         <div>
           <label htmlFor="post-tags" className={labelClass}>
             Tags{' '}
@@ -124,7 +121,6 @@ export default function PostForm({ form, onChange, onSubmit, error, loading, sub
           />
         </div>
 
-        {/* Content */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label htmlFor="post-content" className={labelClass + ' mb-0'}>
@@ -193,7 +189,6 @@ export default function PostForm({ form, onChange, onSubmit, error, loading, sub
           </div>
         </div>
 
-        {/* Visibility */}
         <fieldset>
           <legend className={labelClass}>Visibility</legend>
           <div className="flex gap-3">
@@ -226,7 +221,6 @@ export default function PostForm({ form, onChange, onSubmit, error, loading, sub
           </div>
         </fieldset>
 
-        {/* Actions */}
         <div className="flex gap-3 pt-2 border-t border-stone-100">
           <button
             type="submit"

@@ -33,7 +33,6 @@ export default function Login() {
     <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
 
-        {/* Brand */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
             <div className="w-9 h-9 bg-amber-500 rounded-xl flex items-center justify-center">
@@ -47,7 +46,6 @@ export default function Login() {
           <p className="text-stone-500 text-sm mt-1">Sign in to your account to continue</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-8">
           {error && (
             <div id="login-error" role="alert" className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-6">

@@ -104,7 +104,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Page header */}
       <div className="bg-white border-b border-stone-100">
         <div className="max-w-6xl mx-auto px-6 py-8">
           <div className="flex items-center gap-3 mb-1">
@@ -118,7 +117,6 @@ export default function AdminDashboard() {
           <p className="text-stone-400 text-sm">Manage users, posts, and view platform analytics.</p>
         </div>
 
-        {/* Tab navigation */}
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex gap-1 border-b border-stone-100">
             {tabs.map((t) => (
@@ -153,7 +151,6 @@ export default function AdminDashboard() {
           </div>
         ) : (
           <>
-            {/* Stats Tab */}
             {tab === 'stats' && stats && (
               <div className="space-y-8">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -235,7 +232,6 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* Users Tab */}
             {tab === 'users' && (
               <div>
                 {users.length === 0 ? (
@@ -303,7 +299,6 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* Posts Tab */}
             {tab === 'posts' && (
               <div>
                 {posts.length === 0 ? (

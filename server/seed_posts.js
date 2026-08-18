@@ -1,11 +1,3 @@
-/**
- * seed_posts.js - Populate MongoDB Atlas with 5 high-quality blog posts.
- *
- * Run from the server/ directory:
- *   node seed_posts.js
- *
- * Requires MONGO_URI in .env
- */
 
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
@@ -13,7 +5,6 @@ import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
-// Inline schemas to avoid circular imports when run standalone
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -411,7 +402,6 @@ async function seed() {
     await mongoose.connect(uri);
     console.log('Connected to: ' + mongoose.connection.host);
 
-    // Step 1: Find or create seed author
     let author = await User.findOne({ email: SEED_AUTHOR.email });
 
     if (!author) {
@@ -424,7 +414,6 @@ async function seed() {
         console.log('Seed author already exists: ' + author.name + ' (' + author._id + ')');
     }
 
-    // Step 2: Check current posts
     const existingCount = await Post.countDocuments();
     console.log('Existing posts in collection: ' + existingCount);
 
@@ -447,7 +436,6 @@ async function seed() {
         console.log('Cleared.');
     }
 
-    // Step 3: Insert 5 posts
     console.log('\nInserting 5 blog posts...');
 
     const postDocs = POSTS.map(p => ({
@@ -465,7 +453,6 @@ async function seed() {
     const inserted = await Post.insertMany(postDocs);
     console.log('Inserted ' + inserted.length + ' posts.');
 
-    // Step 4: Verify
     await verifyPosts();
 
     await mongoose.disconnect();

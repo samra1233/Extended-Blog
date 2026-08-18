@@ -4,8 +4,6 @@ import Post from '../models/Post.js';
 import Comment from '../models/Comment.js';
 import validateObjectId from '../utils/validateId.js';
 
-// @desc  Get all users
-// @route GET /api/admin/users
 const getAllUsers = asyncHandler(async (req, res) => {
   const page = Math.max(1, parseInt(req.query.page) || 1);
   const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 20));
@@ -19,8 +17,6 @@ const getAllUsers = asyncHandler(async (req, res) => {
   res.json({ users, page, pages: Math.ceil(total / limit), total });
 });
 
-// @desc  Delete a user and all their content
-// @route DELETE /api/admin/users/:id
 const deleteUser = asyncHandler(async (req, res) => {
   validateObjectId(req.params.id, res, 'user ID');
   const user = await User.findById(req.params.id);
@@ -35,7 +31,6 @@ const deleteUser = asyncHandler(async (req, res) => {
     throw new Error('Cannot delete your own admin account');
   }
 
-  // Remove user's posts and comments
   const userPosts = await Post.find({ author: user._id }).select('_id');
   const postIds = userPosts.map((p) => p._id);
   await Comment.deleteMany({ $or: [{ author: user._id }, { post: { $in: postIds } }] });
@@ -45,8 +40,6 @@ const deleteUser = asyncHandler(async (req, res) => {
   res.json({ message: 'User and all associated content deleted' });
 });
 
-// @desc  Get all posts including drafts (admin view)
-// @route GET /api/admin/posts
 const getAdminPosts = asyncHandler(async (req, res) => {
   const page = Math.max(1, parseInt(req.query.page) || 1);
   const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 20));
@@ -64,8 +57,6 @@ const getAdminPosts = asyncHandler(async (req, res) => {
   res.json({ posts, page, pages: Math.ceil(total / limit), total });
 });
 
-// @desc  Get platform statistics
-// @route GET /api/admin/stats
 const getAdminStats = asyncHandler(async (req, res) => {
   const [userCount, postCount, commentCount, topViewed, topLiked] = await Promise.all([
     User.countDocuments(),
@@ -86,8 +77,6 @@ const getAdminStats = asyncHandler(async (req, res) => {
   res.json({ userCount, postCount, commentCount, topViewed, topLiked });
 });
 
-// @desc  Promote or demote a user's role
-// @route PUT /api/admin/users/:id/role
 const setUserRole = asyncHandler(async (req, res) => {
   const { role } = req.body;
 
@@ -109,8 +98,6 @@ const setUserRole = asyncHandler(async (req, res) => {
 
   res.json({ _id: user._id, name: user.name, email: user.email, role: user.role });
 });
-
-// ── Blog post seed data ───────────────────────────────────────────────────────
 
 const SEED_POSTS_DATA = [
   {
@@ -243,8 +230,6 @@ const SEED_POSTS_DATA = [
   },
 ];
 
-// @desc  Seed 5 high-quality blog posts into MongoDB (admin only)
-// @route POST /api/admin/seed-posts
 const seedPosts = asyncHandler(async (req, res) => {
   const mongoose = (await import('mongoose')).default;
 
@@ -253,7 +238,6 @@ const seedPosts = asyncHandler(async (req, res) => {
     throw new Error('MongoDB is not connected. Seeding requires an active database connection.');
   }
 
-  // Find or create seed author
   const SEED_EMAIL = 'alex.rivera.seed@blogapp.internal';
   let author = await User.findOne({ email: SEED_EMAIL });
 
@@ -271,7 +255,6 @@ const seedPosts = asyncHandler(async (req, res) => {
     });
   }
 
-  // Check existing posts
   const existingCount = await Post.countDocuments();
   if (existingCount > 0) {
     const existing = await Post.find({}).select('content status');
@@ -287,7 +270,6 @@ const seedPosts = asyncHandler(async (req, res) => {
     await Post.deleteMany({});
   }
 
-  // Insert 5 posts
   const postDocs = SEED_POSTS_DATA.map(p => ({
     title: p.title,
     slug: p.slug,
@@ -302,7 +284,6 @@ const seedPosts = asyncHandler(async (req, res) => {
 
   const inserted = await Post.insertMany(postDocs);
 
-  // Verify
   const finalCount = await Post.countDocuments({ status: 'published' });
   const issues = [];
   const all = await Post.find({ status: 'published' }).populate('author', 'name');

@@ -16,9 +16,7 @@ const formatUser = (user, token) => ({
   ...(token ? { token } : {}),
 });
 
-// @desc  Register a new user
-// @route POST /api/auth/register
-const registerUser = asyncHandler(async (req, res) => {
+export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -38,13 +36,10 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   const user = await User.create({ name, email, password });
-
   res.status(201).json(formatUser(user, generateToken(user._id)));
 });
 
-// @desc  Authenticate user & get token
-// @route POST /api/auth/login
-const loginUser = asyncHandler(async (req, res) => {
+export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -54,7 +49,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  // Always run bcrypt comparison to prevent timing-based user enumeration
   const dummyHash = '$2a$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012';
   const passwordMatch = user
     ? await user.matchPassword(password)
@@ -68,16 +62,12 @@ const loginUser = asyncHandler(async (req, res) => {
   res.json(formatUser(user, generateToken(user._id)));
 });
 
-// @desc  Get current logged-in user
-// @route GET /api/auth/me
-const getMe = asyncHandler(async (req, res) => {
+export const getMe = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select('-password');
   res.json(formatUser(user));
 });
 
-// @desc  Update profile (name, bio, avatar)
-// @route PUT /api/auth/me
-const updateProfile = asyncHandler(async (req, res) => {
+export const updateProfile = asyncHandler(async (req, res) => {
   const { name, bio, avatar } = req.body;
 
   const user = await User.findById(req.user._id);
@@ -91,15 +81,11 @@ const updateProfile = asyncHandler(async (req, res) => {
   user.avatar = avatar ?? user.avatar;
 
   const updated = await user.save();
-
   res.json(formatUser(updated));
 });
 
-// @desc  Toggle bookmark on a post
-// @route PUT /api/auth/bookmarks/:postId
-const toggleBookmark = asyncHandler(async (req, res) => {
+export const toggleBookmark = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
-  // Works when mounted under /api/auth/bookmarks/:postId OR /api/posts/:id/bookmark
   const postId = req.params.postId || req.params.id;
 
   const alreadyBookmarked = user.bookmarks.some((id) => id.toString() === postId);
@@ -114,9 +100,7 @@ const toggleBookmark = asyncHandler(async (req, res) => {
   res.json({ bookmarks: user.bookmarks, bookmarked: !alreadyBookmarked });
 });
 
-// @desc  Get current user's bookmarked posts
-// @route GET /api/auth/bookmarks
-const getBookmarks = asyncHandler(async (req, res) => {
+export const getBookmarks = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).populate({
     path: 'bookmarks',
     populate: { path: 'author', select: 'name avatar' },
@@ -125,9 +109,7 @@ const getBookmarks = asyncHandler(async (req, res) => {
   res.json(user.bookmarks);
 });
 
-// @desc  Follow / unfollow a user
-// @route PUT /api/auth/follow/:userId
-const toggleFollow = asyncHandler(async (req, res) => {
+export const toggleFollow = asyncHandler(async (req, res) => {
   const targetId = req.params.userId;
 
   if (targetId === req.user._id.toString()) {
@@ -161,9 +143,7 @@ const toggleFollow = asyncHandler(async (req, res) => {
   res.json({ following: nowFollowing, followerCount });
 });
 
-// @desc  Get paginated feed from followed authors
-// @route GET /api/auth/following-feed
-const getFollowingFeed = asyncHandler(async (req, res) => {
+export const getFollowingFeed = asyncHandler(async (req, res) => {
   const me = await User.findById(req.user._id).select('following');
 
   const page = Math.max(1, parseInt(req.query.page) || 1);
@@ -181,5 +161,3 @@ const getFollowingFeed = asyncHandler(async (req, res) => {
 
   res.json({ posts, page, pages: Math.ceil(total / limit), total });
 });
-
-export { registerUser, loginUser, getMe, updateProfile, toggleBookmark, getBookmarks, toggleFollow, getFollowingFeed };

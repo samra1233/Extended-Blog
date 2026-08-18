@@ -1,8 +1,6 @@
 import Notification from '../models/Notification.js';
 import { getIO } from '../socket.js';
 
-// Creates a notification and emits it in real-time.
-// Deduplicates: same sender+type+post within 24 hours won't create a second entry.
 export async function createNotification({ recipient, sender, type, post = null }) {
   if (!recipient || !sender) return;
   if (recipient.toString() === sender.toString()) return;

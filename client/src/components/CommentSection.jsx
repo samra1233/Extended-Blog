@@ -43,7 +43,6 @@ function CommentNode({ comment, postId, user, onDelete, onReply }) {
 
   return (
     <div className="bg-white rounded-2xl border border-stone-100 p-5 shadow-sm">
-      {/* Comment header */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-2.5">
           <Avatar name={comment.author?.name} avatar={comment.author?.avatar} />
@@ -74,10 +73,8 @@ function CommentNode({ comment, postId, user, onDelete, onReply }) {
         </div>
       </div>
 
-      {/* Comment body */}
       <p className="text-stone-700 text-sm leading-relaxed">{comment.content}</p>
 
-      {/* Reply form */}
       {showReplyForm && (
         <form onSubmit={handleReplySubmit} className="mt-4 pl-4 border-l-2 border-stone-100">
           <label htmlFor={`reply-${comment._id}`} className="sr-only">Write a reply</label>
@@ -108,7 +105,6 @@ function CommentNode({ comment, postId, user, onDelete, onReply }) {
         </form>
       )}
 
-      {/* Nested replies */}
       {comment.replies?.length > 0 && (
         <div className="mt-4 ml-3 space-y-3 pl-4 border-l-2 border-stone-100">
           {comment.replies.map((reply) => (
@@ -204,7 +200,6 @@ export default function CommentSection({ postId }) {
         {count > 0 ? `${count} comment${count !== 1 ? 's' : ''}` : 'Comments'}
       </h3>
 
-      {/* New comment form */}
       {token ? (
         <form onSubmit={handleSubmit} className="mb-8">
           <div className="flex items-start gap-3">
@@ -238,14 +233,12 @@ export default function CommentSection({ postId }) {
         </div>
       )}
 
-      {/* Error state */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">
           {error}
         </div>
       )}
 
-      {/* Comment list */}
       {loading ? (
         <div className="space-y-4">
           {[...Array(2)].map((_, i) => (

@@ -8,7 +8,6 @@ export default function AISummarizer({ content }) {
   const [open, setOpen] = useState(false);
 
   const handleSummarize = useCallback(async () => {
-    // Already have a summary — just toggle visibility
     if (summary) {
       setOpen((v) => !v);
       return;
@@ -31,7 +30,6 @@ export default function AISummarizer({ content }) {
     }
   }, [content, summary]);
 
-  // Nothing useful to summarize under 100 words
   const wordCount = content?.trim().split(/\s+/).length || 0;
   if (wordCount < 100) return null;
 

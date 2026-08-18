@@ -4,7 +4,6 @@ import { uploadSingle } from '../middleware/upload.js';
 
 const router = express.Router();
 
-// POST /api/upload/image — authenticated users only, returns { url }
 router.post('/image', protect, (req, res, next) => {
   uploadSingle(req, res, (err) => {
     if (err) {

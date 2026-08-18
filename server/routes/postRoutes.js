@@ -15,7 +15,6 @@ import { toggleBookmark } from '../controllers/authController.js';
 
 const router = express.Router();
 
-// Static routes must be defined before /:id to avoid being swallowed
 router.get('/search', searchPosts);
 router.get('/trending', getTrendingPosts);
 router.get('/mine', protect, getMyPosts);

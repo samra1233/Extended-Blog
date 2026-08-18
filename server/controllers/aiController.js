@@ -14,7 +14,6 @@ export const summarizePost = async (req, res, next) => {
       throw new Error('AI summarization is not configured on this server');
     }
 
-    // BART large CNN has a ~1024-token window (~700 words)
     const words = content.trim().split(/\s+/);
     const truncated = words.length > 700 ? words.slice(0, 700).join(' ') : content;
 
@@ -33,7 +32,6 @@ export const summarizePost = async (req, res, next) => {
     const data = await hfRes.json();
 
     if (!hfRes.ok) {
-      // HF returns 503 while the model is cold-starting
       if (hfRes.status === 503 || data?.error?.toLowerCase().includes('loading')) {
         res.status(503);
         throw new Error('AI model is warming up — please try again in about 20 seconds');

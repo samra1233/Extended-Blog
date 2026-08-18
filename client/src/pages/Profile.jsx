@@ -83,7 +83,6 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-stone-50">
 
-      {/* Profile header */}
       <div className="bg-white border-b border-stone-100">
         <div className="max-w-4xl mx-auto px-6 py-10">
           <div className="flex items-start gap-5">
@@ -112,7 +111,6 @@ export default function Profile() {
               {user?.bio && (
                 <p className="text-stone-600 text-sm mt-2 leading-relaxed">{user.bio}</p>
               )}
-              {/* Stats row */}
               <div className="flex items-center gap-5 mt-3">
                 <div className="text-center">
                   <p className="text-lg font-bold text-stone-900">{totalPosts}</p>
@@ -132,7 +130,6 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Edit profile form */}
           {editing && (
             <form onSubmit={handleEditSubmit} className="mt-6 pt-6 border-t border-stone-100 space-y-4">
               <div>
@@ -191,7 +188,6 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Posts section */}
       <div className="max-w-4xl mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-stone-900 tracking-tight">My posts</h2>
@@ -283,7 +279,6 @@ export default function Profile() {
             ))}
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-8">
               <button

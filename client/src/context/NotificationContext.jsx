@@ -22,11 +22,9 @@ export function NotificationProvider({ children }) {
       setNotifications(data.notifications);
       setUnreadCount(data.unreadCount);
     } catch {
-      // silently ignore — user may not be logged in
     }
   }, [token]);
 
-  // Connect socket and fetch initial notifications whenever token changes
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.disconnect();
@@ -68,7 +66,6 @@ export function NotificationProvider({ children }) {
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
     } catch {
-      // ignore
     }
   }, [token]);
 
@@ -80,7 +77,6 @@ export function NotificationProvider({ children }) {
       });
       setNotifications((prev) => prev.filter((n) => n._id !== id));
     } catch {
-      // ignore
     }
   }, [token]);
 

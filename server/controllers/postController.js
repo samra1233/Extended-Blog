@@ -5,7 +5,6 @@ import slugify from '../utils/slugify.js';
 import validateObjectId from '../utils/validateId.js';
 import { createNotification } from '../utils/createNotification.js';
 
-// Generate a unique slug for a given title, optionally excluding a post by id
 const generateUniqueSlug = async (title, excludeId = null) => {
   let base = slugify(title);
   if (!base) base = 'post';
@@ -24,12 +23,9 @@ const generateUniqueSlug = async (title, excludeId = null) => {
   return slug;
 };
 
-// @desc  Get all posts (supports ?tag=, ?status=draft|published, ?author=userId)
-// @route GET /api/posts
-const getAllPosts = asyncHandler(async (req, res) => {
+export const getAllPosts = asyncHandler(async (req, res) => {
   const filter = {};
 
-  // Only admins can request draft posts; everyone else only sees published
   if (req.query.status && req.user?.role === 'admin') {
     filter.status = req.query.status;
   } else {
@@ -61,9 +57,7 @@ const getAllPosts = asyncHandler(async (req, res) => {
   res.json({ posts, page, pages: Math.ceil(total / limit), total });
 });
 
-// @desc  Search posts by title / content
-// @route GET /api/posts/search?q=query
-const searchPosts = asyncHandler(async (req, res) => {
+export const searchPosts = asyncHandler(async (req, res) => {
   const { q } = req.query;
 
   if (!q || !q.trim()) {
@@ -74,7 +68,6 @@ const searchPosts = asyncHandler(async (req, res) => {
   const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 9));
   const skip = (page - 1) * limit;
 
-  // Use MongoDB text index if available; fall back to regex
   let posts, total;
   try {
     const filter = { $text: { $search: q }, status: 'published' };
@@ -88,7 +81,6 @@ const searchPosts = asyncHandler(async (req, res) => {
       Post.countDocuments(filter),
     ]);
   } catch {
-    // Text index not yet built — regex fallback
     const escaped = q.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp(escaped, 'i');
     const filter = {
@@ -108,9 +100,7 @@ const searchPosts = asyncHandler(async (req, res) => {
   res.json({ posts, page, pages: Math.ceil(total / limit), total });
 });
 
-// @desc  Get all posts belonging to the logged-in user (draft + published)
-// @route GET /api/posts/mine  (requires auth)
-const getMyPosts = asyncHandler(async (req, res) => {
+export const getMyPosts = asyncHandler(async (req, res) => {
   const page = Math.max(1, parseInt(req.query.page) || 1);
   const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
   const skip = (page - 1) * limit;
@@ -128,9 +118,7 @@ const getMyPosts = asyncHandler(async (req, res) => {
   res.json({ posts, page, pages: Math.ceil(total / limit), total });
 });
 
-// @desc  Get single post by ID or slug (increments view count)
-// @route GET /api/posts/:id
-const getPostById = asyncHandler(async (req, res) => {
+export const getPostById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const isObjectId = /^[a-fA-F0-9]{24}$/.test(id);
 
@@ -143,7 +131,6 @@ const getPostById = asyncHandler(async (req, res) => {
     throw new Error('Post not found');
   }
 
-  // Block access to drafts for non-owners and non-admins
   if (post.status === 'draft') {
     const requesterId = req.user?._id?.toString();
     const authorId = post.author._id.toString();
@@ -155,7 +142,6 @@ const getPostById = asyncHandler(async (req, res) => {
     }
   }
 
-  // Only increment views on published posts
   if (post.status === 'published') {
     await Post.findByIdAndUpdate(post._id, { $inc: { views: 1 } });
     post.views = (post.views || 0) + 1;
@@ -164,9 +150,7 @@ const getPostById = asyncHandler(async (req, res) => {
   res.json(post);
 });
 
-// @desc  Get most viewed posts
-// @route GET /api/posts/trending
-const getTrendingPosts = asyncHandler(async (req, res) => {
+export const getTrendingPosts = asyncHandler(async (req, res) => {
   const posts = await Post.find({ status: 'published' })
     .populate('author', 'name avatar')
     .sort({ views: -1 })
@@ -175,9 +159,7 @@ const getTrendingPosts = asyncHandler(async (req, res) => {
   res.json(posts);
 });
 
-// @desc  Create a new post
-// @route POST /api/posts
-const createPost = asyncHandler(async (req, res) => {
+export const createPost = asyncHandler(async (req, res) => {
   const { title, content, tags, coverImage, status } = req.body;
 
   if (!title || !content) {
@@ -201,9 +183,7 @@ const createPost = asyncHandler(async (req, res) => {
   res.status(201).json(populated);
 });
 
-// @desc  Update a post (author or admin)
-// @route PUT /api/posts/:id
-const updatePost = asyncHandler(async (req, res) => {
+export const updatePost = asyncHandler(async (req, res) => {
   validateObjectId(req.params.id, res, 'post ID');
   const post = await Post.findById(req.params.id);
 
@@ -222,7 +202,6 @@ const updatePost = asyncHandler(async (req, res) => {
 
   const { title, content, tags, coverImage, status } = req.body;
 
-  // Regenerate slug only if title changes
   if (title && title !== post.title) {
     post.slug = await generateUniqueSlug(title, post._id);
   }
@@ -239,9 +218,7 @@ const updatePost = asyncHandler(async (req, res) => {
   res.json(updated);
 });
 
-// @desc  Delete a post (author or admin)
-// @route DELETE /api/posts/:id
-const deletePost = asyncHandler(async (req, res) => {
+export const deletePost = asyncHandler(async (req, res) => {
   validateObjectId(req.params.id, res, 'post ID');
   const post = await Post.findById(req.params.id);
 
@@ -258,15 +235,12 @@ const deletePost = asyncHandler(async (req, res) => {
     throw new Error('Not authorized to delete this post');
   }
 
-  // Cascade delete all comments on this post
   await Comment.deleteMany({ post: post._id });
   await post.deleteOne();
   res.json({ message: 'Post deleted successfully' });
 });
 
-// @desc  Like / unlike a post
-// @route PUT /api/posts/:id/like
-const likePost = asyncHandler(async (req, res) => {
+export const likePost = asyncHandler(async (req, res) => {
   validateObjectId(req.params.id, res, 'post ID');
   const post = await Post.findById(req.params.id);
 
@@ -282,22 +256,9 @@ const likePost = asyncHandler(async (req, res) => {
     post.likes = post.likes.filter((id) => id.toString() !== userId);
   } else {
     post.likes.push(req.user._id);
-    // Fire-and-forget notification — don't block the response
     createNotification({ recipient: post.author, sender: req.user._id, type: 'like', post: post._id }).catch(() => {});
   }
 
   await post.save();
   res.json({ likes: post.likes });
 });
-
-export {
-  getAllPosts,
-  searchPosts,
-  getMyPosts,
-  getPostById,
-  getTrendingPosts,
-  createPost,
-  updatePost,
-  deletePost,
-  likePost,
-};
