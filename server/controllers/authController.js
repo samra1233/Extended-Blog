@@ -146,6 +146,17 @@ export const toggleFollow = asyncHandler(async (req, res) => {
   res.json({ following: nowFollowing, followerCount });
 });
 
+export const makeMeAdmin = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+  user.role = 'admin';
+  await user.save();
+  res.json(formatUser(user));
+});
+
 export const getFollowingFeed = asyncHandler(async (req, res) => {
   const me = await User.findById(req.user._id).select('following');
 

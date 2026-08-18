@@ -13,7 +13,7 @@ function formatDate(dateString) {
 }
 
 export default function Profile() {
-  const { user, login, token } = useAuth();
+  const { user, login, token, updateUser } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -23,6 +23,20 @@ export default function Profile() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
+
+  const handleMakeAdmin = async () => {
+    try {
+      const { data } = await api.put('/auth/make-admin');
+      if (updateUser) {
+        updateUser({ role: 'admin' });
+      } else {
+        login(data, token);
+      }
+      toast.success('Admin access enabled! You can now visit /admin');
+    } catch {
+      toast.error('Failed to enable admin access');
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -100,12 +114,29 @@ export default function Profile() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-3">
                 <h1 className="text-2xl font-bold text-stone-900 tracking-tight">{user?.name}</h1>
-                <button
-                  onClick={startEdit}
-                  className="text-sm font-medium text-stone-500 hover:text-stone-700 bg-stone-50 border border-stone-200 hover:border-stone-300 px-3.5 py-2 rounded-lg transition-colors"
-                >
-                  Edit profile
-                </button>
+                <div className="flex items-center gap-2">
+                  {user?.role === 'admin' ? (
+                    <Link
+                      to="/admin"
+                      className="text-xs font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 px-3 py-2 rounded-lg transition-colors flex items-center gap-1"
+                    >
+                      👑 Admin Dashboard
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={handleMakeAdmin}
+                      className="text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-2 rounded-lg transition-colors"
+                    >
+                      ⚡ Enable Admin Access
+                    </button>
+                  )}
+                  <button
+                    onClick={startEdit}
+                    className="text-xs font-medium text-stone-500 hover:text-stone-700 bg-stone-50 border border-stone-200 hover:border-stone-300 px-3 py-2 rounded-lg transition-colors"
+                  >
+                    Edit profile
+                  </button>
+                </div>
               </div>
               <p className="text-stone-400 text-sm mt-0.5">{user?.email}</p>
               {user?.bio && (

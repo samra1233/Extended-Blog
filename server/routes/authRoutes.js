@@ -8,6 +8,7 @@ import {
   getBookmarks,
   toggleFollow,
   getFollowingFeed,
+  makeMeAdmin,
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -17,6 +18,7 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.get('/me', protect, getMe);
 router.put('/me', protect, updateProfile);
+router.put('/make-admin', protect, makeMeAdmin);
 
 router.get('/bookmarks', protect, getBookmarks);
 router.put('/bookmarks/:postId', protect, toggleBookmark);
